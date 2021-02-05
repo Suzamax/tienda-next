@@ -1,108 +1,100 @@
-import { useSession, signIn, signOut } from 'next-auth/client';
+/** @jsxRuntime classic */
+/** @jsx jsx */
+import { jsx } from 'theme-ui';
 
+import { useSession, signIn, signOut } from 'next-auth/client';
 import Link from 'next/link';
 import React, { useState } from 'react';
+
+import { Button, Flex, NavLink, IconButton } from 'theme-ui';
 
 const Navbar = () => {
   const [session, loading] = useSession();
   const [isActive, setisActive] = React.useState(false);
 
-  const signInButtonNode = () => {
-    if (session) {
-      return false;
-    }
-
-    return (
-      <div>
-        <Link href="/api/auth/signin">
-          <button
-            className="button is-primary"
-            onClick={(e) => {
-              e.preventDefault();
-              signIn();
-            }}
-          >
-            <strong>Sign In</strong>
-          </button>
-        </Link>
-      </div>
-    );
-  };
-
-  const signOutButtonNode = () => {
-    if (!session) {
-      return false;
-    }
-
-    return (
-      <div>
-        <Link href="/api/auth/signout">
-          <button
-            className="button is-danger"
-            onClick={(e) => {
-              e.preventDefault();
-              signOut();
-            }}
-          >
-            <strong>Sign Out</strong>
-          </button>
-        </Link>
-      </div>
+  const ButtonNode = () => {
+    return session ? (
+      <NavLink href="/api/auth/signout">
+        <Button
+          sx={{
+            bg: '#f00',
+            ':hover': {
+              bg: 'accent',
+            },
+          }}
+          onClick={(e) => {
+            e.preventDefault();
+            signOut();
+          }}
+        >
+          <strong>Sign Out from {session.user.name}</strong>
+        </Button>
+      </NavLink>
+    ) : (
+      <NavLink href="/api/auth/signin">
+        <Button
+          sx={{
+            ':hover': {
+              bg: 'secondary',
+            },
+          }}
+          onClick={(e) => {
+            e.preventDefault();
+            signIn();
+          }}
+        >
+          <strong>Sign In</strong>
+        </Button>
+      </NavLink>
     );
   };
 
   return (
-    <nav className="navbar" role="navigation" aria-label="main navigation">
-      <div className="navbar-brand">
-        <a className="navbar-item">Home</a>
-        <a
-          onClick={() => {
-            setisActive(!isActive);
-          }}
-          role="button"
-          className={`navbar-burger burger ${isActive ? 'is-active' : ''}`}
-          aria-label="menu"
-          aria-expanded="false"
-          data-target="navbarBasicExample"
-        >
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-        </a>
-      </div>
-
-      <div
-        id="navbarBasicExample"
-        className={`navbar-menu ${isActive ? 'is-active' : ''}`}
+    <div>
+      <nav
+        sx={{
+          display: 'flex',
+          px: 3,
+          py: 2,
+          alignItems: 'center',
+          bg: 'muted',
+        }}
       >
-        <div className="navbar-start">
-          <a className="navbar-item">Home</a>
+        <Link to="/" href="/">
+          <IconButton
+            sx={{
+              appearance: 'none',
+              width: 32,
+              height: 32,
+              m: 0,
+              p: 1,
+              color: 'primary',
+              bg: 'accent',
+              border: 0,
+              ':focus': {
+                outline: '2px solid',
+              },
+              ':hover': {
+                color: 'primary',
+              },
+            }}
+          >
+            Nextop
+            <svg
+              data-icon="grid"
+              viewBox="0 0 32 32"
+              style={{ fill: 'currentcolor' }}
+            >
+              <title>Super Normal Icon Mark</title>
+              <path d="M2 2 L10 2 L10 10 L2 10z M12 2 L20 2 L20 10 L12 10z M22 2 L30 2 L30 10 L22 10z M2 12 L10 12 L10 20 L2 20z M12 12 L20 12 L20 20 L12 20z M22 12 L30 12 L30 20 L22 20z M2 22 L10 22 L10 30 L2 30z M12 22 L20 22 L20 30 L12 30z M22 22 L30 22 L30 30 L22 30z"></path>
+            </svg>
+          </IconButton>
+        </Link>
+        <div sx={{ mx: 'auto' }} />
 
-          <a className="navbar-item">Documentation</a>
-
-          <div className="navbar-item has-dropdown is-hoverable">
-            <a className="navbar-link">More</a>
-
-            <div className="navbar-dropdown">
-              <a className="navbar-item">About</a>
-              <a className="navbar-item">Jobs</a>
-              <a className="navbar-item">Contact</a>
-              <hr className="navbar-divider" />
-              <a className="navbar-item">Report an issue</a>
-            </div>
-          </div>
-        </div>
-
-        <div className="navbar-end">
-          <div className="navbar-item">
-            <div className="buttons">
-              {signOutButtonNode()}
-              {signInButtonNode()}
-            </div>
-          </div>
-        </div>
-      </div>
-    </nav>
+        <div sx={{}}>{ButtonNode()}</div>
+      </nav>
+    </div>
   );
 };
 

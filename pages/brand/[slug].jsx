@@ -4,13 +4,14 @@ import { jsx } from 'theme-ui';
 import { Input, Heading, Box } from 'theme-ui';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/router';
 import Head from 'next/head';
-import { fetchAPI } from '../lib/api';
-import Layout from '../components/Layout';
-import { NextSeo } from 'next-seo';
-import BrandList from '../components/BrandList';
+import { fetchAPI } from '../../lib/api';
+import ProductList from '../../components/ProductList';
 
 const Home = ({ homepage }) => {
+  const router = useRouter();
+  const { slug } = router.query;
   const [query, updateQuery] = useState('');
 
   return (
@@ -25,11 +26,11 @@ const Home = ({ homepage }) => {
             bg="muted"
             onChange={(e) => updateQuery(e.target.value.toLocaleLowerCase())}
             value={query}
-            placeholder="Write here a brand..."
+            placeholder="Write here a product..."
           />
         </div>
       </Box>
-      <BrandList search={query} />
+      <ProductList search={query} />
     </div>
   );
 };
@@ -39,6 +40,19 @@ export async function getStaticProps() {
   return {
     props: { homepage },
     revalidate: 1,
+  };
+}
+
+export async function getStaticPaths() {
+  const brands = await fetchAPI('/brands');
+
+  return {
+    paths: brands.map((b) => ({
+      params: {
+        slug: b.slug,
+      },
+    })),
+    fallback: false,
   };
 }
 
